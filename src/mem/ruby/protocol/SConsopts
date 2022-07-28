@@ -35,6 +35,7 @@ main.Append(ALL_PROTOCOLS=[
     'MOESI_AMD_Base',
     'MESI_Two_Level',
     'MESI_Three_Level',
+    'MESI_Three_Level_Unique_Access',
     'MESI_Three_Level_HTM',
     'MI_example',
     'MOESI_CMP_directory',
