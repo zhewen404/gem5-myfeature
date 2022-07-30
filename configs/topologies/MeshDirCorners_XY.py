@@ -58,7 +58,8 @@ class MeshDirCorners_XY(SimpleTopology):
         dir_nodes = []
         dma_nodes = []
         for node in nodes:
-            if node.type == 'L1Cache_Controller' or \
+            if node.type == 'L0Cache_Controller' or \
+            node.type == 'L1Cache_Controller' or \
             node.type == 'L2Cache_Controller':
                 cache_nodes.append(node)
             elif node.type == 'Directory_Controller':
