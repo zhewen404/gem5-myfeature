@@ -30,13 +30,13 @@ if __name__ == "__main__":
     parser = construct_argparser()
     args = parser.parse_args()
 
-    filename = f"my_scripts/fs/parsec/\
-        {args.benchmark}_{args.sim}_{args.core}.rcS"
+    filename = f"my_scripts/fs/parsec/"\
+        f"{args.benchmark}_{args.sim}_{args.core}.rcS"
     file1 = open(filename, "w")
     string_wr = f'cd /home/gem5/parsec-benchmark;\nsource env.sh;\n' \
         f'echo "{args.benchmark} starts :)";\n' \
-        f'parsecmgmt -a run -p {args.benchmark}\
-             -c gcc-hooks -i {args.sim} -n {args.core};\n' \
+        f'parsecmgmt -a run -p {args.benchmark} '\
+        f'-c gcc-hooks -i {args.sim} -n {args.core};\n' \
         f'echo "{args.benchmark} ends :)";\n' \
         f'sleep 5\n' \
         f'echo "ready to exit m5";\n' \
