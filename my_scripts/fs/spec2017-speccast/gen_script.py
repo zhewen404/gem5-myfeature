@@ -42,7 +42,7 @@ if __name__ == "__main__":
     file1 = open(filename, "w")
 
     command = f'sleep 5\n./spec_cast_gem5 -w -c myspeccast'+ \
-        ' -p {args.core} -l {args.sync_at} --' + \
+        f' -p {args.core} -l {args.sync_at} --' + \
         " --".join(benchmarks)
     command += f' > out.txt\ncat out.txt\n'
     print("******** command for full system:")
