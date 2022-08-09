@@ -1,29 +1,26 @@
 import argparse
 import time
 import os
-
+"""
+@inproceedings{
+    10.1145/3297663.3310311,
+    author = {Singh, Sarabjeet and Awasthi, Manu},
+    title = {Memory Centric Characterization and
+        Analysis of SPEC CPU2017 Suite},
+    year = {2019},
+    publisher = {Association for Computing Machinery},
+    booktitle = {Proceedings of the 2019 ACM/SPEC
+        International Conference on Performance Engineering},
+}
+"""
 working_set_map = {
-    """
-    @inproceedings{
-        10.1145/3297663.3310311,
-        author = {Singh, Sarabjeet and Awasthi, Manu},
-        title = {Memory Centric Characterization and
-            Analysis of SPEC CPU2017 Suite},
-        year = {2019},
-        publisher = {Association for Computing Machinery},
-        booktitle = {Proceedings of the 2019 ACM/SPEC
-            International Conference on Performance Engineering},
-    }
-    """
-
     'H': ['mcf', 'cactuBSSN', 'lbm'],
-    'M': ['gcc 1', 'gcc 2', 'gcc 3', 'gcc 4', 'gcc 5',\
-            'omnetpp', 'xalancbmk', 'xz 1', 'xz 2', 'xz 3', \
+    'M': ['omnetpp', 'xz 1', 'xz 2', 'xz 3', \
             'bwaves 1', 'bwaves 2', 'bwaves 3', 'bwaves 4', \
-            'parest', 'cam4', 'fotonik3d', 'roms', \
+            'cam4', 'fotonik3d', 'roms', \
         ],
-    'L': ['perlbench', 'x264 1', 'x264 2', 'x264 3', \
-            'deepsjeng', 'leela', 'exchange2', 'namd', \
+    'L': ['deepsjeng', 'leela', 'exchange2', 'namd', \
+            'x264 1', 'x264 3', \
             'povray', 'wrf', 'blender', 'imagick', 'nab', \
         ],
 }
@@ -31,13 +28,26 @@ working_set_map = {
 bench_map = {
     1: ['mcf', 'cactuBSSN', 'perlbench 1', 'bwaves 2', \
         'lbm', 'x264 1', 'omnetpp', 'namd'],
-    2: ['bwaves 1', 'x264 2', \
-        'namd', 'perlbench 3'],
-    3: ['mcf', 'wrf', 'lbm', 'imagick', \
-        'deepsjeng', 'cactuBSSN', 'povray', 'xz 2', \
-        'cam4', 'leela', 'fotonik3d', 'nab', \
-        'exchange2', 'xalancbmk', 'blender', 'roms', \
-        ]
+    2: ['lbm', 'x264 1', \
+        'namd', 'cam4'],
+    3: [
+        # 'cactuBSSN'
+        # 'deepsjeng',  \
+        'povray', 'imagick', 'xz 2', \
+        #'cam4', 'leela', 'fotonik3d', \
+        # 'nab', 'exchange2', 'omnetpp', 'blender', 'roms', \
+        # 'xz 1', 'namd', 'x264 1', 'x264 3', 'xz 3', \
+        ],
+    4: ['povray'],
+    5: ['imagick', 'xz 2', 'nab', 'exchange2'],
+    6: ['cam4', 'leela', 'fotonik3d'],
+    7: ['omnetpp', 'blender', 'roms', 'xz 1'],
+    8: ['namd', 'x264 1', 'x264 3', 'xz 3'],
+    9: working_set_map['H'], #h
+    10: ['povray', 'cam4', 'nab', 'mcf', 'namd', \
+        'omnetpp', 'lbm', 'fotonik3d'], #hetro
+    11: working_set_map['L'],#L
+    12: ['omnetpp', 'cam4', 'fotonik3d', 'roms', 'xz 1', 'xz 2', 'xz 3'],#M
 }
 
 def construct_argparser():
@@ -55,6 +65,12 @@ def construct_argparser():
                         type=int,
                         default=16,
                         )
+    parser.add_argument('-u',
+                        '--util',
+                        help='utilization',
+                        type=int,
+                        choices=[25, 50, 100],
+                        )
     parser.add_argument('--sync_at',
                         help='sync at',
                         type=int,
@@ -69,11 +85,26 @@ if __name__ == "__main__":
     benchmarks = bench_map[args.key]
 
     filename = f"my_scripts/fs/spec2017-speccast/"\
-        f"set{args.key}_sync{args.sync_at}_c{args.core}.rcS"
+        f"set{args.key}_sync{args.sync_at}_c{args.core}_u{args.util}.rcS"
     file1 = open(filename, "w")
 
+    if args.util == 100:
+        eff_core = args.core
+    elif args.util == 50:
+        eff_core = int(args.core/2)
+    elif args.util == 25:
+        eff_core = int(args.core/4)
+    else: assert False, 'unknow args.util'
+
+    if len(benchmarks) > eff_core:
+        ori_len = len(benchmarks)
+        benchmarks = benchmarks[0:eff_core]
+        print(f'**predefined set contatins {ori_len} benchmarks, '\
+            f'truncated to {len(benchmarks)} benchmarks now.\n'\
+            f'{benchmarks}')
+
     command = f'sleep 5\n./spec_cast_gem5 -w -c myspeccast'+ \
-        f' -p {args.core} -l {args.sync_at} --' + \
+        f' -p {eff_core} -l {args.sync_at} --' + \
         " --".join(benchmarks)
     # command += f' > out.txt\ncat out.txt\n'///
     command += '\n'

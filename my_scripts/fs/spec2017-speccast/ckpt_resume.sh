@@ -1,17 +1,18 @@
 #!/bin/bash
-if [ $# -ne 4 ] 
+if [ $# -ne 5 ] 
 then 
-    echo Usage: ./create_ckpts.sh num_cores setkey sync experiment
+    echo Usage: ./create_ckpts.sh num_cores setkey sync util experiment
     exit
 fi
 
 cores=$1
 setkey=$2
 sync=$3
-experiment=$4
-mem=2GB
+util=$4
+experiment=$5
+mem=24GB
 config=c${cores}-${mem}
-checkpoint_dir=ckpt/x86-linux/$config/spec2017-speccast_roi/$config/x86-linux_set${setkey}_sync${sync}
+checkpoint_dir=ckpt/x86-linux/$config/spec2017-speccast_roi/$config/x86-linux_set${setkey}_sync${sync}_util${util}
 
 case $experiment in
   0) 
@@ -35,10 +36,12 @@ l0_assoc=8
 mkdir -p log
 mkdir -p log/${name}
 
-echo "Running gem5 for set${setkey}_sync${sync}..."
+square_root=$(echo "$cores" | awk '{print sqrt($1)}')
+
+echo "Running gem5 for set${setkey}_sync${sync}_util${util}..."
 
 time ./build/${coh}/gem5.fast \
--d my_STATS/${name}/set${setkey}_sync${sync}_c${cores}_${experiment} \
+-d my_STATS/${name}/set${setkey}_sync${sync}_c${cores}_u${util}_${experiment} \
 configs/example/fs.py \
 --kernel ~/.cache/gem5/x86-linux-kernel-4.19.83 \
 --disk-image /home/zhewen/repo/gem5-stable/gem5-resources/src/spec-2017-speccast/disk-image/spec-2017-speccast/spec-2017-speccast1-image/spec-2017-speccast1 \
@@ -60,8 +63,8 @@ configs/example/fs.py \
 --l2_assoc=${l2_assoc} \
 --network=garnet \
 --topology=MeshDirCorners_XY \
---mesh-rows=8 \
+--mesh-rows=${square_root} \
 --vcs-per-vnet=8 \
---router-latency=1 2>&1 | tee log/${name}/set${setkey}_sync${sync}_c${cores}_${experiment}.txt
+--router-latency=1 2>&1 | tee log/${name}/set${setkey}_sync${sync}_c${cores}_u${util}_${experiment}.txt
 
 
