@@ -609,7 +609,7 @@ CacheMemoryStats::CacheMemoryStats(statistics::Group *parent, CacheMemory &_cm)
     }
 
     m_unique_access_ct
-        .init(0, 3199, 8)
+        .init(0, 3199, 4)
         .flags(statistics::pdf);
 }
 
