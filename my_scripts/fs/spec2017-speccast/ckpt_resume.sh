@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ $# -ne 5 ] 
 then 
-    echo Usage: ./create_ckpts.sh num_cores setkey sync util experiment
+    echo Usage: ./ckpt_resume.sh num_cores setkey sync util experiment
     exit
 fi
 
