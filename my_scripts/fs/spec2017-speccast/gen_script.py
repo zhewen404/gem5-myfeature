@@ -31,12 +31,17 @@ bench_map = {
     2: ['lbm', 'x264 1', \
         'namd', 'cam4'],
     3: [
-        # 'cactuBSSN'
-        # 'deepsjeng',  \
-        'povray', 'imagick', 'xz 2', \
-        #'cam4', 'leela', 'fotonik3d', \
-        # 'nab', 'exchange2', 'omnetpp', 'blender', 'roms', \
-        # 'xz 1', 'namd', 'x264 1', 'x264 3', 'xz 3', \
+        'deepsjeng', \
+        'leela', \
+        'exchange2', \
+        'namd', \
+        'x264 1', \
+        'x264 3', \
+        'povray', \
+        'wrf', \
+        'blender', \
+        'imagick', \
+        'nab', \
         ],
     4: ['povray'],
     5: ['imagick', 'xz 2', 'nab', 'exchange2'],
