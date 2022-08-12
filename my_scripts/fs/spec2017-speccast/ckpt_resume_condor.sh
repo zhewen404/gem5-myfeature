@@ -17,8 +17,8 @@ checkpoint_dir=ckpt/x86-linux/spec2017-speccast_roi/$config/x86-linux_set${setke
 workend=$(($cores*$util/100))
 
 # EDIT two vars below!
-kernel_loc=~/.cache/gem5/x86-linux-kernel-4.19.83 
-image_loc=/home/zhewen/repo/gem5-stable/gem5-resources/src/spec-2017-speccast/disk-image/spec-2017-speccast/spec-2017-speccast1-image/spec-2017-speccast1
+kernel_loc=../x86-linux-kernel-4.19.83 
+image_loc=../spec-2017-speccast1
 
 case $experiment in
   0) 
