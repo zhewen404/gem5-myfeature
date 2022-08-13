@@ -13,12 +13,12 @@ experiment=$5
 
 mem=64GB
 config=c${cores}-${mem}
-checkpoint_dir=ckpt/x86-linux/spec2017-speccast_roi/$config/x86-linux_set${setkey}_sync${sync}_util${util}
 workend=$(($cores*$util/100))
 
-# EDIT two vars below!
+# EDIT three vars below!
 kernel_loc=../x86-linux-kernel-4.19.83 
 image_loc=../spec-2017-speccast1
+checkpoint_dir=../x86-linux_set${setkey}_sync${sync}_util${util}
 
 case $experiment in
   0) 
