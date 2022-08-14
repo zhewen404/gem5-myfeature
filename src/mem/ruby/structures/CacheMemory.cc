@@ -760,6 +760,7 @@ void CacheMemory::computeStats()
     for (std::pair<Addr, int> element : m_unique_access)
     {
         cacheMemoryStats.m_unique_access_ct.sample(element.second);
+        m_unique_access.erase(element.first);
     }
 }
 
