@@ -11,7 +11,7 @@ sync=$3
 util=$4
 
 work=$(($cores*$util/100*$sync))
-mem=64GB
+mem=${1}GB
 config=c${cores}-${mem}
 
 ckptdir=ckpt/x86-linux/spec2017-speccast_roi/$config/x86-linux_set${setkey}_sync${sync}_util${util}
