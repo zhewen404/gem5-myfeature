@@ -26,33 +26,32 @@ working_set_map = {
 }
 
 bench_map = {
-    1: ['mcf', 'cactuBSSN', 'perlbench 1', 'bwaves 2', \
-        'lbm', 'x264 1', 'omnetpp', 'namd'],
-    2: ['lbm', 'x264 1', \
-        'namd', 'cam4'],
-    3: [
-        'deepsjeng', \
-        'leela', \
-        'exchange2', \
-        'namd', \
-        'x264 1', \
-        'x264 3', \
-        'povray', \
-        'wrf', \
-        'blender', \
-        'imagick', \
-        'nab', \
-        ],
-    4: ['povray'],
-    5: ['imagick', 'xz 2', 'nab', 'exchange2'],
-    6: ['cam4', 'leela', 'fotonik3d'],
-    7: ['omnetpp', 'blender', 'roms', 'xz 1'],
-    8: ['namd', 'x264 1', 'x264 3', 'xz 3'],
+    1: ['povray'],
+    2: ['cam4'],
+    3: ['nab'],
+    4: ['mcf'],
+    5: ['namd'],
+    6: ['omnetpp'],
+    7: ['lbm'],
+    8: ['fotonik3d'],
     9: working_set_map['H'], #h
     10: ['povray', 'cam4', 'nab', 'mcf', 'namd', \
         'omnetpp', 'lbm', 'fotonik3d'], #hetro
     11: working_set_map['L'],#L
     12: ['omnetpp', 'cam4', 'fotonik3d', 'roms', 'xz 1', 'xz 2', 'xz 3'],#M
+    13: ['cactuBSSN'],
+    14: ['xz 1'],
+    15: ['xz 2'],
+    16: ['xz 3'],
+    17: ['roms'],
+    18: ['deepsjeng'],
+    19: ['leela'],
+    20: ['exchange2'],
+    21: ['x264 1'],
+    22: ['x264 3'],
+    23: ['wrf'],
+    24: ['blender'],
+    25: ['imagick'],
 }
 
 def construct_argparser():
