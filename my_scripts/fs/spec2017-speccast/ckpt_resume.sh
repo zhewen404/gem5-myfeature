@@ -69,7 +69,7 @@ case $experiment in
     l1_size='512kB'
     l1_assoc=8192 # fully assoc
     ;;
-  5)
+  6)
     name=base5
     coh=X86_MESI_Three_Level
     l2_size='1MB'
@@ -77,24 +77,24 @@ case $experiment in
     l1_size='1MB'
     l1_assoc=16384 # fully assoc
     ;;
-  6)
-    name=base5
+  7)
+    name=base6
     coh=X86_MESI_Three_Level
     l2_size='1MB'
     l2_assoc=32
     l1_size='2MB'
     l1_assoc=32768 # fully assoc
     ;;
-  7)
-    name=base5
+  8)
+    name=base7
     coh=X86_MESI_Three_Level
     l2_size='1MB'
     l2_assoc=32
     l1_size='4MB'
     l1_assoc=65536 # fully assoc
     ;;
-  8)
-    name=base5
+  9)
+    name=base8
     coh=X86_MESI_Three_Level
     l2_size='1MB'
     l2_assoc=32
