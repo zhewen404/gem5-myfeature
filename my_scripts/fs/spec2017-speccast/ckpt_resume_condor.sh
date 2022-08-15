@@ -11,7 +11,7 @@ sync=$3
 util=$4
 experiment=$5
 
-mem=64GB
+mem=${cores}GB
 config=c${cores}-${mem}
 workend=$(($cores*$util/100))
 
