@@ -224,7 +224,6 @@ structure (CacheMemory, external = "yes") {
   void profileDemandMiss();
   void profilePrefetchHit();
   void profilePrefetchMiss();
-  void profileUniqueAccess(Addr address);
 }
 
 structure (WireBuffer, inport="yes", outport="yes", external = "yes") {

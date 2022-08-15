@@ -153,9 +153,6 @@ class CacheMemory : public SimObject
     void htmAbortTransaction();
     void htmCommitTransaction();
 
-    // Computes stats just prior to dump event
-    void computeStats();
-
   public:
     int getCacheSize() const { return m_cache_size; }
     int getCacheAssoc() const { return m_cache_assoc; }
@@ -215,15 +212,9 @@ class CacheMemory : public SimObject
     bool m_use_occupancy;
 
     private:
-      std::unordered_map<Addr, int> m_unique_access;
-
       struct CacheMemoryStats : public statistics::Group
       {
-          CacheMemoryStats(statistics::Group *parent, CacheMemory &cm);
-
-          void preDumpStats() override;
-
-          CacheMemory &cm;
+          CacheMemoryStats(statistics::Group *parent);
 
           statistics::Scalar numDataArrayReads;
           statistics::Scalar numDataArrayWrites;
@@ -248,8 +239,6 @@ class CacheMemory : public SimObject
           statistics::Formula m_prefetch_accesses;
 
           statistics::Vector m_accessModeType;
-
-          statistics::Distribution m_unique_access_ct;
       } cacheMemoryStats;
 
     public:
@@ -259,8 +248,6 @@ class CacheMemory : public SimObject
       void profileDemandMiss();
       void profilePrefetchHit();
       void profilePrefetchMiss();
-      void profileUniqueAccess(Addr address);
-
 };
 
 std::ostream& operator<<(std::ostream& out, const CacheMemory& obj);
