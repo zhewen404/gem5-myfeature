@@ -1,0 +1,9 @@
+protocol "MESI_Three_Level_Unique_Access";
+include "RubySlicc_interfaces.slicc";
+include "MESI_Two_Level-msg.sm";
+include "MESI_Three_Level-msg.sm";
+include "MESI_Three_Level-L0cache.sm";
+include "MESI_Three_Level_Unique_Access-L1cache.sm";
+include "MESI_Two_Level_Unique_Access-L2cache.sm";
+include "MESI_Two_Level-dir.sm";
+include "MESI_Two_Level-dma.sm";

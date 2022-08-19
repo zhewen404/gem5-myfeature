@@ -73,7 +73,7 @@ CacheMemory::CacheMemory(const Params &p)
               p.start_index_bit, p.ruby_system),
     tagArray(p.tagArrayBanks, p.tagAccessLatency,
              p.start_index_bit, p.ruby_system),
-    cacheMemoryStats(this)
+    cacheMemoryStats(this, *this)
 {
     m_cache_size = p.size;
     m_cache_assoc = p.assoc;
@@ -521,8 +521,10 @@ CacheMemory::isLocked(Addr address, int context)
 }
 
 CacheMemory::
-CacheMemoryStats::CacheMemoryStats(statistics::Group *parent)
+CacheMemoryStats::CacheMemoryStats(statistics::Group *parent, CacheMemory &_cm)
     : statistics::Group(parent),
+    cm(_cm),
+
       ADD_STAT(numDataArrayReads, "Number of data array reads"),
       ADD_STAT(numDataArrayWrites, "Number of data array writes"),
       ADD_STAT(numTagArrayReads, "Number of tag array reads"),
@@ -544,7 +546,9 @@ CacheMemoryStats::CacheMemoryStats(statistics::Group *parent)
       ADD_STAT(m_prefetch_misses, "Number of cache prefetch misses"),
       ADD_STAT(m_prefetch_accesses, "Number of cache prefetch accesses",
                m_prefetch_hits + m_prefetch_misses),
-      ADD_STAT(m_accessModeType, "")
+      ADD_STAT(m_accessModeType, ""),
+      ADD_STAT(m_unique_access_ct, statistics::units::Count::get(),
+               "unique access count distribution")
 {
     numDataArrayReads
         .flags(statistics::nozero);
@@ -603,6 +607,10 @@ CacheMemoryStats::CacheMemoryStats(statistics::Group *parent)
             .flags(statistics::nozero)
             ;
     }
+
+    m_unique_access_ct
+        .init(0, 3199, 4)
+        .flags(statistics::pdf);
 }
 
 // assumption: SLICC generated files will only call this function
@@ -747,6 +755,15 @@ CacheMemory::htmCommitTransaction()
         htmReadSetSize, htmWriteSetSize);
 }
 
+void CacheMemory::computeStats()
+{
+    for (std::pair<Addr, int> element : m_unique_access)
+    {
+        cacheMemoryStats.m_unique_access_ct.sample(element.second);
+        m_unique_access.erase(element.first);
+    }
+}
+
 void
 CacheMemory::profileDemandHit()
 {
@@ -769,6 +786,29 @@ void
 CacheMemory::profilePrefetchMiss()
 {
     cacheMemoryStats.m_prefetch_misses++;
+}
+
+void
+CacheMemory::profileUniqueAccess(Addr address)
+{
+    auto it = m_unique_access.find(address);
+    if (it != m_unique_access.end()) {
+        it->second++;
+        return;
+    }
+    m_unique_access[address] = 0;
+}
+
+void
+CacheMemory::CacheMemoryStats::preDumpStats()
+{
+    statistics::Group::preDumpStats();
+    /**
+     * For every stats dump, the unique access count
+     * stats should be computed just before the dump to ensure correct stats
+     * value being reported for current dump window.
+     */
+    cm.computeStats();
 }
 
 } // namespace ruby
