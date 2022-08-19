@@ -52,6 +52,12 @@ bench_map = {
     23: ['wrf'],
     24: ['blender'],
     25: ['imagick'],
+    26: ['lbm', 'omnetpp', \
+        'xz 1', 'cam4', 'fotonik3d', 'roms', \
+        'deepsjeng', 'leela', 'exchange2', 'namd', \
+        'x264 1', 'povray', 'wrf', 'blender', \
+        'imagick', 'nab', \
+        ]
 }
 
 def construct_argparser():
