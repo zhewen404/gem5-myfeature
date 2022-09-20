@@ -47,7 +47,7 @@ def aggregate(output_dir, cpts, no_compress, memory_size):
         os.system("mkdir -p " + output_path)
 
     agg_mem_file = open(output_path + "/system.physmem.store0.pmem", "wb+")
-    agg_config_file = open(output_path + "/m5.cpt", "wb+")
+    agg_config_file = open(output_path + "/m5.cpt", "w+")
 
     if not no_compress:
         merged_mem = gzip.GzipFile(fileobj= agg_mem_file, mode="wb")
@@ -59,26 +59,38 @@ def aggregate(output_dir, cpts, no_compress, memory_size):
         print(arg)
         merged_config = myCP()
         config = myCP()
-        config.readfp(open(cpts[i] + "/m5.cpt"))
+        config.read_file(open(cpts[i] + "/m5.cpt"))
 
         for sec in config.sections():
-            if re.compile("cpu").search(sec):
+            if re.compile("cpu\.").search(sec):
                 newsec = re.sub("cpu", "cpu" + str(i).zfill(num_digits), sec)
                 merged_config.add_section(newsec)
 
                 items = config.items(sec)
                 for item in items:
                     if item[0] == "paddr":
-                        merged_config.set(newsec, item[0], int(item[1]) + (page_ptr << 12))
+                        page_shift = int(config.get(\
+                            "system.workload.mempools.pool0", \
+                            "page_shift"))
+                        merged_config.set(newsec, item[0], \
+                            str(int(item[1]) + (page_ptr << page_shift)))
                         continue
                     merged_config.set(newsec, item[0], item[1])
 
-                if re.compile("workload.FdMap256$").search(sec):
-                    merged_config.set(newsec, "M5_pid", i)
+                # if re.compile("workload.FdMap256$").search(sec):
+                #     merged_config.set(newsec, "M5_pid", i)
+            elif re.compile("cpu$").search(sec):
+                newsec = re.sub("cpu", "cpu" + str(i).zfill(num_digits), sec)
+                merged_config.add_section(newsec)
+
+                items = config.items(sec)
+                for item in items:
+                    merged_config.set(newsec, item[0], item[1])
 
             elif sec == "system":
                 pass
-            elif sec == "Globals":
+
+            elif sec == "root.globals":
                 tick = config.getint(sec, "curTick")
                 if tick > max_curtick:
                     max_curtick = tick
@@ -92,9 +104,14 @@ def aggregate(output_dir, cpts, no_compress, memory_size):
             merged_config.write(agg_config_file)
 
         ### memory stuff
-        pages = int(config.get("system", "pagePtr"))
+        pages = int(config.get(\
+            "system.workload.mempools.pool0", \
+            "free_page_num"))
         page_ptr = page_ptr + pages
         print("pages to be read: ", pages)
+
+        vtag = config.get("root.globals", "version_tags")
+
 
         f = open(cpts[i] + "/system.physmem.store0.pmem", "rb")
         gf = gzip.GzipFile(fileobj=f, mode="rb")
@@ -111,12 +128,18 @@ def aggregate(output_dir, cpts, no_compress, memory_size):
         gf.close()
         f.close()
 
-    merged_config.add_section("system")
-    merged_config.set("system", "pagePtr", page_ptr)
-    merged_config.set("system", "nextPID", len(cpts))
+    # merged_config.add_section("system")
+    # merged_config.set("system", "pagePtr", str(page_ptr))
+    # merged_config.set("system", "nextPID", str(len(cpts)))
+    merged_config.add_section('system')
+    for i in range(len(cpts)):
+        merged_config.set('system', f'quiesceEndTick_{i}', str(0))
+
+    merged_config.set("system.workload.mempools.pool0", \
+        "free_page_num", str(page_ptr))
 
     file_size = page_ptr * 4 * 1024
-    dummy_data = "".zfill(4096)
+    dummy_data = b"".zfill(4096)
     while file_size < memory_size:
         if not no_compress:
             merged_mem.write(dummy_data)
@@ -126,12 +149,18 @@ def aggregate(output_dir, cpts, no_compress, memory_size):
         page_ptr += 1
 
     print("WARNING: ")
-    print("Make sure the simulation using this checkpoint has at least ", end=' ')
+    print("Make sure the simulation using \
+        this checkpoint has at least ", \
+        end=' ')
     print(page_ptr, "x 4K of memory")
-    merged_config.set("system.physmem.store0", "range_size", page_ptr * 4 * 1024)
 
-    merged_config.add_section("Globals")
-    merged_config.set("Globals", "curTick", max_curtick)
+    merged_config.set("system.physmem.store0", \
+        "range_size", str(page_ptr * 4 * 1024))
+    merged_config.set("system.workload.mempools.pool0", \
+        "total_pages", str(page_ptr))
+    merged_config.add_section("root.globals")
+    merged_config.set("root.globals", "curTick", str(max_curtick))
+    merged_config.set("root.globals", "version_tags", vtag)
 
     merged_config.write(agg_config_file)
 

@@ -57,7 +57,9 @@ bench_map = {
         'deepsjeng', 'leela', 'exchange2', 'namd', \
         'x264 1', 'povray', 'wrf', 'blender', \
         'imagick', 'nab', \
-        ]
+        ],
+    27: ['mcf'],
+    28: ['blender', 'deepsjeng'],
 }
 
 def construct_argparser():
