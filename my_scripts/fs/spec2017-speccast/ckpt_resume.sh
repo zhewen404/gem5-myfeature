@@ -125,11 +125,12 @@ configs/example/fs.py \
 --disk-image ${image_loc} \
 --work-end-exit-count ${workend} \
 --num-cpus=${cores} \
---num-dirs=4 \
 --mem-size=${mem} \
 --checkpoint-dir=$checkpoint_dir \
 --checkpoint-restore=1 \
---ruby --restore-with-cpu O3CPU \
+--restore-with-cpu O3CPU \
+--ruby \
+--num-dirs=4 \
 --num-l2caches=$cores \
 --l0d_size=${l0_size} \
 --l0i_size=${l0_size} \
