@@ -487,15 +487,17 @@ workbegin(ThreadContext *tc, uint64_t workid, uint64_t threadid)
     System *sys = tc->getSystemPtr();
     const System::Params &params = sys->params();
 
-    if (params.exit_on_work_items) {
-        exitSimLoop("workbegin", static_cast<int>(workid));
-        return;
-    }
-
+    // bugfix: besides just exiting, we need to actually
+    // register the magic op seen.
     DPRINTF(WorkItems, "Work Begin workid: %d, threadid %d\n", workid,
             threadid);
     tc->getCpuPtr()->workItemBegin();
     sys->workItemBegin(threadid, workid);
+
+    if (params.exit_on_work_items) {
+        exitSimLoop("workbegin", static_cast<int>(workid));
+        return;
+    }
 
     //
     // If specified, determine if this is the specific work item the user
@@ -550,14 +552,16 @@ workend(ThreadContext *tc, uint64_t workid, uint64_t threadid)
     System *sys = tc->getSystemPtr();
     const System::Params &params = sys->params();
 
+    // bugfix: besides just exiting, we need to actually
+    // register the magic op seen.
+    DPRINTF(WorkItems, "Work End workid: %d, threadid %d\n", workid, threadid);
+    tc->getCpuPtr()->workItemEnd();
+    sys->workItemEnd(threadid, workid);
+
     if (params.exit_on_work_items) {
         exitSimLoop("workend", static_cast<int>(workid));
         return;
     }
-
-    DPRINTF(WorkItems, "Work End workid: %d, threadid %d\n", workid, threadid);
-    tc->getCpuPtr()->workItemEnd();
-    sys->workItemEnd(threadid, workid);
 
     //
     // If specified, determine if this is the specific work item the user
