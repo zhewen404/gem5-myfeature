@@ -40,6 +40,8 @@ class MeshDirCorners_XY(SimpleTopology):
 
     def __init__(self, controllers):
         self.nodes = controllers
+        self.num_numa_nodes = 0
+        self.numa_nodes = []
 
     def makeTopology(self, options, network, IntLink, ExtLink, Router):
         nodes = self.nodes
@@ -116,6 +118,9 @@ class MeshDirCorners_XY(SimpleTopology):
         for n in numa_nodes:
             if n:
                 num_numa_nodes += 1
+
+        self.numa_nodes = numa_nodes
+        self.num_numa_nodes = num_numa_nodes
 
         # Connect the dir nodes to the corners.
         ext_links.append(ExtLink(link_id=link_count, ext_node=dir_nodes[0],
@@ -213,9 +218,9 @@ class MeshDirCorners_XY(SimpleTopology):
     # Register nodes with filesystem
     def registerTopology(self, options):
         i = 0
-        for n in numa_nodes:
+        for n in self.numa_nodes:
             if n:
                 FileSystemConfig.register_node(n,
-                    MemorySize(options.mem_size) // num_numa_nodes, i)
+                    MemorySize(options.mem_size) // self.num_numa_nodes, i)
             i += 1
 
